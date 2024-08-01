@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ランダム画像表示</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .random-image {
+            position: absolute;
+            width: 50%;
+            max-width: 80px;
+            transition: filter 0.2s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container"></div>
+
+    <script>
+        const images = ['1_ぼん.png', '2_つく.png', '3_ばっ.png', '4_つく.png', '5_ぼん.png', '6_ぼん.png'];
+        let currentIndex = 0;
+        let containerWidth, containerHeight;
+
+        function updateContainerSize() {
+            containerWidth = window.innerWidth;
+            containerHeight = window.innerHeight;
+        }
+
+        function getRandomPosition() {
+            const x = Math.random() * (containerWidth - 100);
+            const y = Math.random() * (containerHeight - 100);
+            return { x, y };
+        }
+
+        function displayImage() {
+            const container = document.getElementById('image-container');
+            const img = document.createElement('img');
+            img.src = images[currentIndex];
+            img.classList.add('random-image');
+            
+            const { x, y } = getRandomPosition();
+            img.style.left = `${x}px`;
+            img.style.top = `${y}px`;
+
+            container.appendChild(img);
+
+            img.style.filter = 'blur(50px)';
+
+            // ぼかしを0.2秒で解除
+            setTimeout(() => {
+                img.style.filter = 'blur(0px)';
+            }, 20);
+
+            // 0.1秒後に0.6秒かけてぼかしを強くする
+            setTimeout(() => {
+                img.style.transition = 'filter 0.1s ease-in';
+                img.style.filter = 'blur(10px)';
+            }, 600);
+
+            // 1秒後に画像を削除（余韻を残すために遅らせる）
+            setTimeout(() => {
+                img.remove();
+            }, 640);
+
+            currentIndex = (currentIndex + 1) % images.length;
+
+            // 次の画像を0.67秒後に表示（1.5倍のテンポに合わせる）
+            setTimeout(displayImage, 500);
+        }
+
+        window.addEventListener('resize', updateContainerSize);
+
+        updateContainerSize();
+        displayImage();
+    </script>
+</body>
+</html>
