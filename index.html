@@ -52,7 +52,7 @@ function updateContainerSize() {
 }
 
 function updateImageSize() {
-    const scaleFactor = Math.min(containerWidth / 1000, containerHeight / 1000);
+    const scaleFactor = Math.min(containerWidth / 10000, containerHeight / 10000);
     document.documentElement.style.setProperty('--base-size', `${scaleFactor}px`);
 }
 
