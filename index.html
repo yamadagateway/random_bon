@@ -58,8 +58,18 @@ function updateImageSize() {
 }
 
 function getRandomPosition(width, height) {
-    const x = Math.random() * (containerWidth - width);
-    const y = Math.random() * (containerHeight - height);
+    // コンテナのサイズを取得
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    
+    // 画像の実際のサイズを計算
+    const scaledWidth = width * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-size')) / 100);
+    const scaledHeight = height * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-size')) / 100);
+    
+    // ランダムな位置を計算（画像が画面内に収まるように）
+    const x = Math.random() * (containerWidth - scaledWidth);
+    const y = Math.random() * (containerHeight - scaledHeight);
+    
     return { x, y };
 }
 
