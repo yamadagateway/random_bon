@@ -5,111 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランダム画像表示</title>
     <style>
-    body, html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        /* background-color: black; */ /* 背景を黒に設定 */
-    }
-    #image-container {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-    }
-    .random-image {
-    position: absolute;
-    width: calc(var(--base-size) * var(--width-multiplier) * 1px);
-    height: calc(var(--base-size) * var(--height-multiplier) * 1px);
-    transition: filter 0.2s ease-out;
-    }
-　　　　　　　　</style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* background-color: black; */
+        }
+        #image-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .random-image {
+            position: absolute;
+            width: calc(var(--base-size) * var(--width-multiplier) * 1px);
+            height: calc(var(--base-size) * var(--height-multiplier) * 1px);
+            transition: filter 0.2s ease-out;
+        }
+    </style>
 </head>
 <body>
     <div id="image-container"></div>
 
     <script>
-    const images = ['1_bon_white.png', '2_tsuku_white.png', '3_ba_white.png', '4_tsuku_white.png', '5_bon_white.png', '6_bon_white.png'];
-let currentIndex = 0;
-let containerWidth, containerHeight;
+        const images = ['1_bon_white.png', '2_tsuku_white.png', '3_ba_white.png', '4_tsuku_white.png', '5_bon_white.png', '6_bon_white.png'];
+        const originalSizes = [
+        { width: 387, height: 720 },  // 1_bon.png
+        { width: 356, height: 542 },  // 2_tsuku.png
+        { width: 417, height: 510 },  // 3_ba.png
+        { width: 357, height: 632 },  // 4_tsuku.png
+        { width: 396, height: 734 },  // 5_bon.png
+        { width: 420, height: 742 }   // 6_bon.png
+        ];
+        let containerWidth, containerHeight;
 
-// 画像のオリジナルサイズを定義（ピクセル単位）
-const originalSizes = [
-    { width: 387, height: 720 },  // 1_bon.png
-    { width: 356, height: 542 },  // 2_tsuku.png
-    { width: 417, height: 510 },  // 3_ba.png
-    { width: 357, height: 632 },  // 4_tsuku.png
-    { width: 396, height: 734 },  // 5_bon.png
-    { width: 420, height: 742 }   // 6_bon.png
-];
+        function updateContainerSize() {
+            containerWidth = window.innerWidth;
+            containerHeight = window.innerHeight;
+            updateImageSize();
+        }
 
-function updateContainerSize() {
-    containerWidth = window.innerWidth;
-    containerHeight = window.innerHeight;
-    updateImageSize();
-}
+        function updateImageSize() {
+            const scaleFactor = Math.min(containerWidth, containerHeight) / 10;
+            const baseSize = scaleFactor / 500;
+            document.documentElement.style.setProperty('--base-size', baseSize);
+        }
 
-function updateImageSize() {
-    const scaleFactor = Math.min(containerWidth, containerHeight) / 10; // 画面の1/10を最大サイズとする
-    const baseSize = scaleFactor/ 500; // 50分の1のサイズに調整
-    document.documentElement.style.setProperty('--base-size', baseSize);
-}
+        function getRandomPosition(width, height) {
+            const baseSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-size'));
+            const scaledWidth = width * baseSize;
+            const scaledHeight = height * baseSize;
+            const x = Math.random() * (containerWidth - scaledWidth);
+            const y = Math.random() * (containerHeight - scaledHeight);
+            return { x, y };
+        }
 
-function getRandomPosition(width, height) {
-    const baseSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-size'));
-    
-    // 画像の実際のサイズを計算
-    const scaledWidth = width * baseSize;
-    const scaledHeight = height * baseSize;
-    
-    // ランダムな位置を計算（画像が画面内に収まるように）
-    const x = Math.random() * (containerWidth - scaledWidth);
-    const y = Math.random() * (containerHeight - scaledHeight);
-    
-    return { x, y };
-}
+        function displayImage(currentIndex, loopId) {
+            const container = document.getElementById('image-container');
+            const img = document.createElement('img');
+            img.src = images[currentIndex];
+            img.classList.add('random-image');
+            
+            const originalSize = originalSizes[currentIndex];
+            img.style.setProperty('--width-multiplier', originalSize.width);
+            img.style.setProperty('--height-multiplier', originalSize.height);
+            
+            const { x, y } = getRandomPosition(originalSize.width, originalSize.height);
+            img.style.left = `${x}px`;
+            img.style.top = `${y}px`;
 
-function displayImage() {
-    const container = document.getElementById('image-container');
-    const img = document.createElement('img');
-    img.src = images[currentIndex];
-    img.classList.add('random-image');
-    
-    const originalSize = originalSizes[currentIndex];
-    img.style.setProperty('--width-multiplier', originalSize.width);
-    img.style.setProperty('--height-multiplier', originalSize.height);
-    
-    const { x, y } = getRandomPosition(originalSize.width, originalSize.height);
-    img.style.left = `${x}px`;
-    img.style.top = `${y}px`;
+            container.appendChild(img);
 
-    container.appendChild(img);
+            img.style.filter = 'blur(50px)';
 
-    img.style.filter = 'blur(50px)';
+            setTimeout(() => {
+                img.style.filter = 'blur(0px)';
+            }, 20);
 
-    setTimeout(() => {
-        img.style.filter = 'blur(0px)';
-    }, 20);
+            setTimeout(() => {
+                img.style.transition = 'filter 0.15s ease-in';
+                img.style.filter = 'blur(10px)';
+            }, 800);
 
-    setTimeout(() => {
-        img.style.transition = 'filter 0.1s ease-in';
-        img.style.filter = 'blur(10px)';
-    }, 600);
+            setTimeout(() => {
+                img.remove();
+            }, 800);
 
-    setTimeout(() => {
-        img.remove();
-    }, 640);
+            currentIndex = (currentIndex + 1) % images.length;
 
-    currentIndex = (currentIndex + 1) % images.length;
+            setTimeout(() => displayImage(currentIndex, loopId), 500);
+        }
 
-    setTimeout(displayImage, 500);
-}
+        window.addEventListener('resize', updateContainerSize);
+        updateContainerSize();
 
-window.addEventListener('resize', updateContainerSize);
-updateContainerSize();
-displayImage();
+        // 3つのループを開始
+        setTimeout(() => displayImage(0, 1), 0);
+        setTimeout(() => displayImage(2, 2), 300);
+        setTimeout(() => displayImage(4, 3), 600);
     </script>
 </body>
 </html>
