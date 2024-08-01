@@ -5,25 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランダム画像表示</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        #image-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    #image-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+    .random-image {
+        position: absolute;
+        width: auto;
+        height: auto;
+        max-width: 20vw;
+        max-height: 20vh;
+        transition: filter 0.2s ease-out;
+    }
+    
+    /* スマートフォン向けのスタイル */
+    @media (max-width: 767px) {
         .random-image {
-            position: absolute;
-            width: 50%;
-            max-width: 50px;
-            transition: filter 0.2s ease-out;
+            max-width: 30vw;
+            max-height: 30vh;
         }
-    </style>
+    }
+　　　　　　　　</style>
 </head>
 <body>
     <div id="image-container"></div>
@@ -45,40 +56,42 @@
         }
 
         function displayImage() {
-            const container = document.getElementById('image-container');
-            const img = document.createElement('img');
-            img.src = images[currentIndex];
-            img.classList.add('random-image');
-            
-            const { x, y } = getRandomPosition();
-            img.style.left = `${x}px`;
-            img.style.top = `${y}px`;
+    const container = document.getElementById('image-container');
+    const img = document.createElement('img');
+    img.src = images[currentIndex];
+    img.classList.add('random-image');
+    
+    const { x, y } = getRandomPosition(img);
+    img.style.left = `${x}px`;
+    img.style.top = `${y}px`;
 
-            container.appendChild(img);
+    container.appendChild(img);
 
-            img.style.filter = 'blur(50px)';
+    img.style.filter = 'blur(50px)';
 
-            // ぼかしを0.2秒で解除
-            setTimeout(() => {
-                img.style.filter = 'blur(0px)';
-            }, 20);
+    setTimeout(() => {
+        img.style.filter = 'blur(0px)';
+    }, 20);
 
-            // 0.1秒後に0.6秒かけてぼかしを強くする
-            setTimeout(() => {
-                img.style.transition = 'filter 0.1s ease-in';
-                img.style.filter = 'blur(10px)';
-            }, 600);
+    setTimeout(() => {
+        img.style.transition = 'filter 0.1s ease-in';
+        img.style.filter = 'blur(10px)';
+    }, 600);
 
-            // 1秒後に画像を削除（余韻を残すために遅らせる）
-            setTimeout(() => {
-                img.remove();
-            }, 640);
+    setTimeout(() => {
+        img.remove();
+    }, 640);
 
-            currentIndex = (currentIndex + 1) % images.length;
+    currentIndex = (currentIndex + 1) % images.length;
 
-            // 次の画像を0.67秒後に表示（1.5倍のテンポに合わせる）
-            setTimeout(displayImage, 500);
-        }
+    setTimeout(displayImage, 500);
+}
+
+function getRandomPosition(img) {
+    const x = Math.random() * (containerWidth - img.width);
+    const y = Math.random() * (containerHeight - img.height);
+    return { x, y };
+}
 
         window.addEventListener('resize', updateContainerSize);
 
