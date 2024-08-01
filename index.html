@@ -53,7 +53,7 @@ function updateContainerSize() {
 
 function updateImageSize() {
     const scaleFactor = Math.min(containerWidth, containerHeight) / 10; // 画面の1/10を最大サイズとする
-    const baseSize = scaleFactor / 50; // 50分の1のサイズに調整
+    const baseSize = scaleFactor / 30; // 30分の1のサイズに調整
     document.documentElement.style.setProperty('--base-size', baseSize);
 }
 
