@@ -82,17 +82,17 @@
             img.style.filter = 'blur(50px)';
 
             setTimeout(() => {
-                img.style.filter = 'blur(0px)';
+            img.style.filter = 'blur(0px)';
             }, 20);
 
             setTimeout(() => {
-                img.style.transition = 'filter 0.15s ease-in';
-                img.style.filter = 'blur(10px)';
+            img.style.transition = 'filter 0.15s ease-in';
+            img.style.filter = 'blur(10px)';
             }, 800);
 
             setTimeout(() => {
-                img.remove();
-            }, 800);
+            img.remove();
+            }, 950); // 800ms + 150ms（ぼかしの遷移時間）
 
             currentIndex = (currentIndex + 1) % images.length;
 
