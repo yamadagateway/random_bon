@@ -20,19 +20,9 @@
     }
     .random-image {
         position: absolute;
-        width: auto;
-        height: auto;
-        max-width: 50%;
-        max-height: 50px;
+        width: calc(var(--base-size) * var(--width-multiplier));
+        height: calc(var(--base-size) * var(--height-multiplier));
         transition: filter 0.2s ease-out;
-    }
-    
-    /* スマートフォン向けのスタイル */
-    @media (max-width: 767px) {
-        .random-image {
-            max-width: 30vw;
-            max-height: 30vh;
-        }
     }
 　　　　　　　　</style>
 </head>
@@ -40,28 +30,48 @@
     <div id="image-container"></div>
 
     <script>
-        const images = ['1_bon_white.png', '2_tsuku_white.png', '3_ba_white.png', '4_tsuku_white.png', '5_bon_white.png', '6_bon_white.png'];
-        let currentIndex = 0;
-        let containerWidth, containerHeight;
+    const images = ['1_bon.png', '2_tsuku.png', '3_ba.png', '4_tsuku.png', '5_bon.png', '6_bon.png'];
+let currentIndex = 0;
+let containerWidth, containerHeight;
 
-        function updateContainerSize() {
-            containerWidth = window.innerWidth;
-            containerHeight = window.innerHeight;
-        }
+// 画像のオリジナルサイズを定義（ピクセル単位）
+const originalSizes = [
+    { width: 80, height: 80 },  // 1_bon.png
+    { width: 80, height: 80 },  // 2_tsuku.png
+    { width: 80, height: 80 },  // 3_ba.png
+    { width: 80, height: 80 },  // 4_tsuku.png
+    { width: 80, height: 80 },  // 5_bon.png
+    { width: 80, height: 80 }   // 6_bon.png
+];
 
-        function getRandomPosition() {
-            const x = Math.random() * (containerWidth - 100);
-            const y = Math.random() * (containerHeight - 100);
-            return { x, y };
-        }
+function updateContainerSize() {
+    containerWidth = window.innerWidth;
+    containerHeight = window.innerHeight;
+    updateImageSize();
+}
 
-        function displayImage() {
+function updateImageSize() {
+    const scaleFactor = Math.min(containerWidth / 1000, containerHeight / 1000);
+    document.documentElement.style.setProperty('--base-size', `${scaleFactor}px`);
+}
+
+function getRandomPosition(width, height) {
+    const x = Math.random() * (containerWidth - width);
+    const y = Math.random() * (containerHeight - height);
+    return { x, y };
+}
+
+function displayImage() {
     const container = document.getElementById('image-container');
     const img = document.createElement('img');
     img.src = images[currentIndex];
     img.classList.add('random-image');
     
-    const { x, y } = getRandomPosition(img);
+    const originalSize = originalSizes[currentIndex];
+    img.style.setProperty('--width-multiplier', originalSize.width);
+    img.style.setProperty('--height-multiplier', originalSize.height);
+    
+    const { x, y } = getRandomPosition(originalSize.width, originalSize.height);
     img.style.left = `${x}px`;
     img.style.top = `${y}px`;
 
@@ -87,16 +97,9 @@
     setTimeout(displayImage, 500);
 }
 
-function getRandomPosition(img) {
-    const x = Math.random() * (containerWidth - img.width);
-    const y = Math.random() * (containerHeight - img.height);
-    return { x, y };
-}
-
-        window.addEventListener('resize', updateContainerSize);
-
-        updateContainerSize();
-        displayImage();
+window.addEventListener('resize', updateContainerSize);
+updateContainerSize();
+displayImage();
     </script>
 </body>
 </html>
